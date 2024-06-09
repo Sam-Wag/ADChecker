@@ -1,23 +1,16 @@
-﻿# Import the Active Directory module
-Import-Module ActiveDirectory
+# Get the current user's name
+$currentUserName = $env:USERNAME
 
-# Get all users from Active Directory
-$users = Get-ADUser -Filter *
+# Get all groups that the current user is a member of
+$userGroups = Get-ADUser -Identity $currentUserName -Properties MemberOf | Select-Object -ExpandProperty MemberOf
 
-#Get all users group membership from Active directory 
+# Extract group names from the distinguished names
+$groupNames = $userGroups | ForEach-Object {
+    $_ -replace '^CN=([^,]+).+$','$1'
+}
 
-# Loop through each user
-foreach ($user in $users) {
-    Write-Host "User: $($user.Name)"
-    Write-Host "Groups:"
-
-    # Get the groups that the user is a member of
-    $groups = Get-ADPrincipalGroupMembership $user | Select-Object -ExpandProperty Name
-
-    # Loop through each group
-    foreach ($group in $groups) {
-        Write-Host "  - $group"
-    }
-
-    Write-Host ""
+Write-Host "Current User: $currentUserName"
+Write-Host "Groups:"
+$groupNames | ForEach-Object {
+    Write-Host "- $_"
 }
