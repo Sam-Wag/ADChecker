@@ -4,6 +4,8 @@ Import-Module ActiveDirectory
 # Get all users from Active Directory
 $users = Get-ADUser -Filter *
 
+#Get all users group membership from Active directory 
+
 # Loop through each user
 foreach ($user in $users) {
     Write-Host "User: $($user.Name)"
